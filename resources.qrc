@@ -1,0 +1,23 @@
+<RCC>
+    <qresource prefix="/">
+        <file>qml/main.qml</file>
+        <file>images/information.svg</file>
+        <file>images/question.svg</file>
+        <file>qtquickcontrols2.conf</file>
+        <file>qml/CalendarDialog.qml</file>
+        <file>images/traptacloud.png</file>
+        <file>images/trapta.png</file>
+        <file>images/pdf.png</file>
+        <file>images/disconnected-disabled-128.png</file>
+        <file>images/disconnected-128.png</file>
+        <file>images/connected-disabled-128.png</file>
+        <file>images/connected-128.png</file>
+        <file>images/trapta-disabled.png</file>
+        <file>images/cloud.png</file>
+        <file>images/warning.png</file>
+        <file>images/cross.png</file>
+        <file>images/tick.png</file>
+        <file>qml/PopupBox.qml</file>
+        <file>qml/App.qml</file>
+    </qresource>
+</RCC>
