@@ -184,12 +184,12 @@ FocusScope {
             ToolTip.visible: hovered
             ToolTip.text: "URL de publication des scores (ex: http://score.trapta.eu)"
             placeholderText: "URL de publication des scores"
-            text: cloud.url_scores
+            text: cloud.urlScores
             Keys.onReturnPressed: urlScores.focus = false
             Keys.onEnterPressed: urlScores.focus = false
             onEditingFinished: cloud.setUrlScores(urlScores.displayText)
             Keys.onEscapePressed: {
-                urlScores.text = cloud.url_scores
+                urlScores.text = cloud.urlScores
                 urlScores.focus = false
             }
             enabled: lock.checked
@@ -208,12 +208,12 @@ FocusScope {
             ToolTip.visible: hovered
             ToolTip.text: "URL de publication des feuilles de marques (ex: http://score.trapta.eu/uploadpdf.php)"
             placeholderText: "URL de publication des feuilles de marques"
-            text: cloud.url_marques
+            text: cloud.urlMarques
             Keys.onReturnPressed: urlMarques.focus = false
             Keys.onEnterPressed: urlMarques.focus = false
             onEditingFinished: cloud.setUrlMarques(urlMarques.displayText)
             Keys.onEscapePressed: {
-                urlMarques.text = cloud.url_marques
+                urlMarques.text = cloud.urlMarques
                 urlMarques.focus = false
             }
             enabled: lock.checked

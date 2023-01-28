@@ -1,2 +1,8 @@
 
 .DS_Store
+.qmake.stash
+Makefile
+bin
+build
+release
+qrc_resources.cpp

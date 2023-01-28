@@ -1,0 +1,234 @@
+name: build release
+
+on:
+  push:
+    branches: [ "*" ]
+  pull_request:
+    branches: [ "*" ]
+
+
+
+jobs:
+  linux:
+    runs-on: ubuntu-18.04
+    defaults:
+      run:
+        shell: bash
+    steps:
+    - name: Install libxkbcommon
+      run: sudo apt-get install -y libxkbcommon-x11-dev
+
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v3
+      with:
+        version: '5.15.2'
+        host: 'linux'
+        target: 'desktop'
+        arch: 'gcc_64'
+        dir: '${{ runner.temp }}'
+        modules: 'qtquick3d'
+        
+    - name: Clone repo
+      uses: actions/checkout@v3
+
+    - name: Build
+      working-directory: ${{ github.workspace }}
+      run:  |
+            qmake
+            make
+
+
+    - name: AppImage
+      working-directory: ${{ github.workspace }}
+      run: |
+        ls ${{ runner.temp }}/Qt/5.15.2/gcc_64/bin
+        wget -O deploy.AppImage https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage
+        chmod +x deploy.AppImage
+        export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${{ runner.temp }}/Qt/5.15.2/gcc_64/lib/
+        export PATH=${{ runner.temp }}/Qt/5.15.2/gcc_64/bin/:$PATH
+        cp ${{ github.workspace }}/images/traptacloud.png ${{ github.workspace }}/bin/release/
+        ./deploy.AppImage --appimage-extract-and-run TRAPTACloud.desktop -always-overwrite -appimage -no-translations -qmldir=${{ github.workspace }}/qml
+        mv TRAPTACloud*.AppImage trapta-cloud.AppImge
+        chmod +x trapta-cloud.AppImge
+
+              
+    - name: Save build artifact
+      uses: actions/upload-artifact@master
+      with:
+        name: trapta-cloud.AppImge
+        path: ${{ github.workspace }}/trapta-cloud.AppImge
+
+
+  windows:
+    runs-on: windows-2019
+    defaults:
+      run:
+        shell: cmd
+    steps:
+    - name: Install Qtr
+      uses: jurplel/install-qt-action@v3
+      with:
+        version: '5.15.2'
+        host: 'windows'
+        target: 'desktop'
+        arch: 'win64_msvc2019_64'
+        dir: '${{ runner.temp }}'
+        modules: 'qtquick3d'
+        tools: 'tools_ifw'
+        
+    - name: Clone repo
+      uses: actions/checkout@v3
+
+    - name: Download JOM
+      uses: suisei-cn/actions-download-file@v1
+      with:
+        url:    http://download.qt.io/official_releases/jom/jom.zip
+        target: ${{ runner.temp }}\
+
+    - name: Unzip JOM
+      working-directory: ${{ runner.temp }}
+      run:  |
+            7z x jom.zip -ojom
+  
+              
+    - name: Create build directory
+      run:  mkdir ${{ github.workspace }}\build
+
+    - name: Set up Visual Studio shell
+      uses: egor-tensin/vs-shell@v2
+      with:
+        arch: x64
+
+    - name: Build
+      working-directory: '${{ github.workspace }}'
+      run:  |
+            qmake -config release
+            ${{ runner.temp }}\jom\jom
+
+    - name: Deployer
+      working-directory: '${{ github.workspace }}'
+      run:  |
+            qtenv2.bat && windeployqt ${{ github.workspace }}\bin\release\TRAPTACloud.exe --no-opengl-sw --no-system-d3d-compiler --no-virtualkeyboard --no-compiler-runtime --no-translations --qmldir=${{ github.workspace }}/qml
+
+
+    - name: Generate installer
+      working-directory: ${{ github.workspace }}
+      run:  |
+            copy package.xml ${{ github.workspace }}\bin\release\
+            echo "ls ${{ github.workspace }}\bin\release"
+            ls ${{ github.workspace }}\bin\release
+            echo "ls ${{ github.workspace }}\bin\release\bearer"
+            ls ${{ github.workspace }}\bin\release\bearer
+            ${{ runner.temp }}\Qt\Tools\QtInstallerFramework\4.5\bin\binarycreator.exe --offline-only -c config.xml -p ${{ github.workspace }}\bin\release ${{ github.workspace }}\bin\release\TRAPTACloud.exe
+            ls
+
+    
+
+    - name: Zip build
+      working-directory: ${{ runner.temp }}
+      run:  |
+            7z a trapta-cloud-build.zip ${{ github.workspace }}\bin\release\* -r
+
+              
+    - name: Save build artifact
+      uses: actions/upload-artifact@master
+      with:
+        name: trapta-cloud.zip
+        path: ${{ runner.temp }}\trapta-cloud-build.zip
+
+  mac:
+    runs-on: macos-latest
+    steps:
+
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v3
+      with:
+        version: '5.15.2'
+        host: 'mac'
+        target: 'desktop'
+        arch: 'clang_64'
+        dir: '${{ runner.temp }}'
+        modules: 'qtquick3d'
+        
+    - name: Clone repo
+      uses: actions/checkout@v3
+
+    - name: Build
+      working-directory: ${{ github.workspace }}
+      run:  |
+            qmake
+            make
+
+    - name: Install xcode
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: latest-stable
+
+    - name: CReate Dmg
+      working-directory: ${{ github.workspace }}
+      run: |
+        export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${{ runner.temp }}/Qt/5.15.2/clang_64/lib/
+        export PATH=${{ runner.temp }}/Qt/5.15.2/clang_64/bin/:$PATH
+        cd ${{ github.workspace }}/bin/release/
+        macdeployqt traptacloud.App -always-overwrite -dmg -qmldir=${{ github.workspace }}/qml
+
+              
+    - name: Save build artifact
+      uses: actions/upload-artifact@master
+      with:
+        name: trapta-cloud.dmg
+        path: ${{ github.workspace }}/bin/release/traptacloud.dmg
+
+  release:
+    runs-on: ubuntu-18.04
+    defaults:
+      run:
+        shell: bash
+    needs: [linux, windows, mac]
+    steps:
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        body: |
+          New Trapta Cloud version
+        draft: true
+        prerelease: false
+
+    
+    - name: Download all workflow run artifacts
+      uses: actions/download-artifact@v3
+
+    - name: Upload Windows Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: trapta-cloud.zip/trapta-cloud-build.zip
+        asset_name: trapta-cloud-win.zip
+        asset_content_type: application/zip
+
+    - name: Upload Linux Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: trapta-cloud.AppImge/trapta-cloud.AppImge
+        asset_name: trapta-cloud-linux.AppImge
+        asset_content_type: application/zip
+
+    - name: Upload Mac Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: trapta-cloud.dmg/traptacloud.dmg
+        asset_name: trapta-cloud-mac.dmg
+        asset_content_type: application/zip
