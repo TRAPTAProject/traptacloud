@@ -29,7 +29,8 @@ Cloud::Cloud() : QObject(),
     }
     _timeChooserIndex = settings.value("timeChooserIndex", QVariant(12)).toInt();
     _eventDate = settings.value("eventDate", QVariant(QDate::currentDate())).toDate();
-    _url = settings.value("url", QVariant("http://score.trapta.eu")).toString();
+    _url_scores = settings.value("url_scores", QVariant("http://score.trapta.eu")).toString();
+    _url_marques = settings.value("url_marques", QVariant("http://score.trapta.eu/uploadpdf.php")).toString();
     _eventName = settings.value("eventname", QVariant("")).toString();
     _userId = settings.value("username", QVariant("")).toString();
     _password = settings.value("password", QVariant("")).toString();
@@ -61,10 +62,16 @@ void Cloud::setPassword(const QString &password) {
     _password = password;
 }
 
-void Cloud::setUrl(const QString &url) {
+void Cloud::setUrlScores(const QString &url_scores) {
     QSettings settings;
-    settings.setValue("url", QVariant(url));
-    _url = url;
+    settings.setValue("url_scores", QVariant(url_scores));
+    _url_scores = url_scores;
+}
+
+void Cloud::setUrlMarques(const QString &url_marques) {
+    QSettings settings;
+    settings.setValue("url_marques", QVariant(url_marques));
+    _url_marques = url_marques;
 }
 
 void Cloud::setEventName(const QString &eventName) {
@@ -83,16 +90,16 @@ void Cloud::publish() {
         return;
     }
     QByteArray postData;
-    QNetworkRequest request(_url+QString(SCRIPT_DISPLAY));
+    QNetworkRequest request(_url_scores+QString(SCRIPT_DISPLAY));
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded" );
-    postData.append("username="+_userId);
-    postData.append("&password="+_password);
-    postData.append("&eventname="+_eventName);
+    postData.append(("username="+_userId).toUtf8());
+    postData.append(("&password="+_password).toUtf8());
+    postData.append(("&eventname="+_eventName).toUtf8());
     // 21600 seconds is 6 hours, and 900 seconds is 15 minutes
     QTime time = QTime(0,0).addSecs(21600+_timeChooserIndex*900);
     QString dateTimeParam = QString("&eventdate=%0 %1").arg(_eventDate.toString("yyyy-MM-dd")).arg(time.toString());
     qDebug() << "Posting event info with date=" << dateTimeParam;
-    postData.append(dateTimeParam);
+    postData.append(dateTimeParam.toUtf8());
     _networkManager->post(request, postData);
     emit log("Demande au site web TRAPTA: Afficher évènement...");
 }
@@ -100,10 +107,10 @@ void Cloud::publish() {
 void Cloud::hide() {
     if (!userInfoOK()) return;
     QByteArray postData;
-    QNetworkRequest request(_url+QString(SCRIPT_RESET));
+    QNetworkRequest request(_url_scores+QString(SCRIPT_RESET));
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded" );
-    postData.append("username="+_userId);
-    postData.append("&password="+_password);
+    postData.append(("username="+_userId).toUtf8());
+    postData.append(("&password="+_password).toUtf8());
     _networkManager->post(request, postData);
     emit log("Demande au site web TRAPTA: Cacher évènement...");
 }
@@ -145,11 +152,18 @@ void Cloud::replyFinished(QNetworkReply *reply) {
 }
 
 bool Cloud::userInfoOK() {
-    if (_url.isEmpty()) {
+    if (_url_scores.isEmpty()) {
         _linkStatus = -1;
         emit linkStatusChanged(_linkStatus);
         emit log("L'adresse web où poster les données n'est pas renseignée.");
         emit logError(-1, "Adresse manquante", "L'adresse web où poster les données n'est pas renseignée.");
+        return false;
+    }
+    if (_url_marques.isEmpty()) {
+        _linkStatus = -1;
+        emit linkStatusChanged(_linkStatus);
+        emit log("L'adresse web où poster les feuilles de marques n'est pas renseignée.");
+        emit logError(-1, "Adresse manquante", "L'adresse web où poster les feuilles de marques n'est pas renseignée.");
         return false;
     }
     if (_userId.isEmpty()) {
@@ -175,7 +189,7 @@ void Cloud::postJsonDoc(QJsonDocument jsonDoc) {
     if (!userInfoOK()) return;
     qDebug() << jsonDoc.toJson(QJsonDocument::Compact);
     QJsonObject obj = jsonDoc.object();
-    QString url = _url;
+    QString url = _url_scores;
     if (obj.value("dataType").toString()=="ranking") url.append(SCRIPT_RANKING);
     if (obj.value("dataType").toString()=="position") url.append(SCRIPT_POSITIONS);
     if (obj.value("dataType").toString()=="matches") url.append(SCRIPT_MATCHES);
@@ -186,8 +200,8 @@ void Cloud::postJsonDoc(QJsonDocument jsonDoc) {
     QByteArray postData;
     QNetworkRequest request(url);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded" );
-    postData.append("username="+_userId);
-    postData.append("&password="+_password);
+    postData.append(("username="+_userId).toUtf8());
+    postData.append(("&password="+_password).toUtf8());
     postData.append("&data="+jsonDoc.toJson(QJsonDocument::Compact));
     _networkManager->post(request, postData);
     emit log("Envoi des données sur internet...");
