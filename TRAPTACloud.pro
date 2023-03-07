@@ -1,8 +1,12 @@
 TARGET = TRAPTACloud
 TEMPLATE = app
 
-QT += network qml quick
+QT += core network qml quick
 CONFIG += c++11
+CONFIG += release
+QMAKE_LFLAGS += -static 
+
+
 
 unix:!macx {
     QMAKE_LFLAGS += -no-pie

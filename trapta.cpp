@@ -15,7 +15,7 @@ void TRAPTA::onServerAddressChanged(const QString &host, int port)
     if (port!=0) _port = port;
     if (_connected) {
         qDebug() << "TRAPTA host changed while already connected";
-        log("TRAPTA a changé d'adresse ou de port. Relancez la connection.");
+        emit log("TRAPTA a changé d'adresse ou de port. Relancez la connection.");
         disconnectFromServer();
 
     }

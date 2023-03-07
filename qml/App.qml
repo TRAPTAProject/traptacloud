@@ -173,7 +173,7 @@ FocusScope {
 
 
         TextField {
-            id: url
+            id: urlScores
             font.pixelSize: app.fontSize
             anchors.left: parent.left
             anchors.top: userLabelBg.bottom
@@ -182,15 +182,39 @@ FocusScope {
             selectByMouse: true
             ToolTip.delay: 1000
             ToolTip.visible: hovered
-            ToolTip.text: "URL de publication (ex: http://score.trapta.eu)"
-            placeholderText: "URL de publication"
-            text: cloud.url
-            Keys.onReturnPressed: url.focus = false
-            Keys.onEnterPressed: url.focus = false
-            onEditingFinished: cloud.setUrl(url.displayText)
+            ToolTip.text: "URL de publication des scores (ex: http://score.trapta.eu)"
+            placeholderText: "URL de publication des scores"
+            text: cloud.url_scores
+            Keys.onReturnPressed: urlScores.focus = false
+            Keys.onEnterPressed: urlScores.focus = false
+            onEditingFinished: cloud.setUrlScores(urlScores.displayText)
             Keys.onEscapePressed: {
-                url.text = cloud.url
-                url.focus = false
+                urlScores.text = cloud.url_scores
+                urlScores.focus = false
+            }
+            enabled: lock.checked
+
+        }
+
+
+        TextField {
+            id: urlMarques
+            font.pixelSize: app.fontSize
+            anchors.left: parent.left
+            anchors.top: urlScores.bottom
+            anchors.right: parent.right
+            selectByMouse: true
+            ToolTip.delay: 1000
+            ToolTip.visible: hovered
+            ToolTip.text: "URL de publication des feuilles de marques (ex: http://score.trapta.eu/uploadpdf.php)"
+            placeholderText: "URL de publication des feuilles de marques"
+            text: cloud.url_marques
+            Keys.onReturnPressed: urlMarques.focus = false
+            Keys.onEnterPressed: urlMarques.focus = false
+            onEditingFinished: cloud.setUrlMarques(urlMarques.displayText)
+            Keys.onEscapePressed: {
+                urlMarques.text = cloud.url_marques
+                urlMarques.focus = false
             }
             enabled: lock.checked
 
@@ -201,7 +225,7 @@ FocusScope {
             id: userId
             font.pixelSize: app.fontSize
             anchors.left: parent.left
-            anchors.top: url.bottom
+            anchors.top: urlMarques.bottom
             anchors.right: parent.right
             placeholderText: "Identifiant"
             selectByMouse: true
@@ -240,7 +264,7 @@ FocusScope {
         }
 
         Component.onCompleted: {
-            lock.checked = (userId.text === "" || url.text === "" | password.text === "")
+            lock.checked = (userId.text === "" || urlMarques.text === "" || urlScores.text === "" || password.text === "")
         }
 
 
@@ -364,7 +388,7 @@ FocusScope {
             ToolTip.delay: 1000
             ToolTip.visible: hovered
             ToolTip.text: "Publier sur la page web l'ensemble des feuilles de score au format PDF"
-            onClicked: Qt.openUrlExternally("http://score.trapta.eu/uploadpdf.php?username="+userId.text+"&password="+password.text)
+            onClicked: Qt.openUrlExternally("http://"+urlMarques.text+"?username="+userId.text+"&password="+password.text)
         }
 
         Connections {
