@@ -169,7 +169,7 @@ jobs:
         export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${{ runner.temp }}/Qt/5.15.2/clang_64/lib/
         export PATH=${{ runner.temp }}/Qt/5.15.2/clang_64/bin/:$PATH
         cd ${{ github.workspace }}/bin/release/
-        macdeployqt traptacloud.App -always-overwrite -dmg -qmldir=${{ github.workspace }}/qml
+        macdeployqt traptacloud -always-overwrite -dmg -qmldir=${{ github.workspace }}/qml
 
               
     - name: Save build artifact
