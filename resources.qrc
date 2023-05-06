@@ -4,7 +4,6 @@
         <file>images/information.svg</file>
         <file>images/question.svg</file>
         <file>qtquickcontrols2.conf</file>
-        <file>qml/CalendarDialog.qml</file>
         <file>images/traptacloud.png</file>
         <file>images/trapta.png</file>
         <file>images/pdf.png</file>
@@ -19,5 +18,6 @@
         <file>images/tick.png</file>
         <file>qml/PopupBox.qml</file>
         <file>qml/App.qml</file>
+        <file>Roboto/Roboto-Regular.ttf</file>
     </qresource>
 </RCC>
