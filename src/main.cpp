@@ -6,6 +6,7 @@
 #include "trapta.h"
 #include "udplistener.h"
 #include "cloud.h"
+#include <QFontDatabase>
 
 #include "viewcontroller.h"
 
@@ -40,15 +41,20 @@ void messageHandler(QtMsgType type, const QMessageLogContext &context, const QSt
 
 int main(int argc, char *argv[]) {
 
-    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-
     QGuiApplication app(argc, argv);
 
     QGuiApplication::setOrganizationName("TRAPTA");
-    QGuiApplication::setOrganizationDomain("trapta.eu");
-    QGuiApplication::setApplicationName("TRAPTACloud");
+    QGuiApplication::setOrganizationDomain("trapta");
+    QGuiApplication::setApplicationName("TRAPTACloud Simple");
 
     qInstallMessageHandler(messageHandler);
+
+    if (QFontDatabase::addApplicationFont(QStringLiteral(":/Roboto/Roboto-Regular.ttf")) == -1) {
+        qWarning() << "Failed to load Roboto-Regular.ttf";
+    }
+
+    QFont regular("Roboto");
+    QGuiApplication::setFont(regular);
 
     ViewController viewController;
     Cloud cloud;
@@ -56,14 +62,6 @@ int main(int argc, char *argv[]) {
     QThread traptaThread;
     TRAPTA trapta;
     trapta.moveToThread(&traptaThread);
-//    connect(this, SIGNAL(connectToServer(QString,int)), _adapter, SLOT(connectToServer(QString,int)));
-//    connect(this, SIGNAL(disconnectFromServer(bool)), _adapter, SLOT(disconnectFromServer(bool)));
-//    connect(_adapter, SIGNAL(connected()), SLOT(connectedToServer()));
-//    connect(_adapter, SIGNAL(disconnected(bool)), SLOT(disconnectedFromServer(bool)));
-//    connect(_adapter, SIGNAL(jsonDocUpdate(QJsonDocument)), SLOT(processJsonDoc(QJsonDocument)));
-//    connect(ui->resetEventButton, SIGNAL(clicked()), SLOT(onResetEventButton()));
-//    connect(ui->displayEventButton, SIGNAL(clicked()), SLOT(onDisplayEventButton()));
-//    connect(ui->updateButton, SIGNAL(clicked()), SLOT(onDisplayEventButton()));
     traptaThread.start();
 
     // start UDP listener

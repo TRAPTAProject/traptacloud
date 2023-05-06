@@ -1,13 +1,12 @@
-import QtQuick 2.10
-import QtQuick.Controls 2.3
-import QtQuick.Controls.Material 2.1
-
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Controls.Material
 
 FocusScope {
 
     id: app
-    width: 650
-    height: 550
+    width: 640
+    height: 480
     focus: true
 
     property int fontSize: 18
@@ -54,8 +53,9 @@ FocusScope {
             anchors.top: eventLabelBg.bottom
             anchors.topMargin: 20
             anchors.right: parent.right
-            placeholderText: "Nom de l'évènement"
+            placeholderText: "Date et nom de l'évènement"
             selectByMouse: true
+            maximumLength: 50
             text: cloud.eventName
             Keys.onReturnPressed: eventName.focus = false
             Keys.onEnterPressed: eventName.focus = false
@@ -67,68 +67,6 @@ FocusScope {
 
         }
 
-        Button {
-            id: dateButton
-            anchors.top: eventName.bottom
-            anchors.left: parent.left
-            ToolTip.delay: 1000
-            ToolTip.visible: hovered
-            ToolTip.text: "Sélectionner la date de l'évènement"
-            text: "  Date...  "
-            onClicked: calendarDialog.open()
-        }
-
-        Label {
-            id: dateLabel
-            anchors.left: dateButton.right
-            anchors.leftMargin: 15
-            anchors.verticalCenter: dateButton.verticalCenter
-            font.pixelSize: app.fontSize
-            text: Qt.formatDate(cloud.eventDate, "d MMMM yyyy")
-        }
-
-        Label {
-            id: timeLabel
-            anchors.left: parent.left
-            anchors.baseline: timeBox.baseline
-            font.pixelSize: app.fontSize
-            text: "Début des tirs à  "
-        }
-
-        ComboBox {
-            id: timeBox
-            anchors.left: timeLabel.right
-            anchors.top: dateButton.bottom
-            currentIndex: cloud.timeChooserIndex
-            model: cloud.timeChooserList
-            onCurrentIndexChanged: cloud.setTimeChooserIndex(timeBox.currentIndex)
-
-        }
-
-        Button {
-            id: publishButton
-            anchors.top: timeBox.bottom
-            anchors.left: parent.left
-            text: "  Publier  "
-            font.pixelSize: app.fontSize
-            ToolTip.delay: 1000
-            ToolTip.visible: hovered
-            ToolTip.text: "Afficher l'évènement sur "+cloud.url
-            onClicked: cloud.publish()
-            highlighted: true
-        }
-
-        Button {
-            id: hideButton
-            anchors.top: timeBox.bottom
-            anchors.right: parent.right
-            text: "  Cacher  "
-            font.pixelSize: app.fontSize
-            ToolTip.delay: 1000
-            ToolTip.visible: hovered
-            ToolTip.text: "Retirer l'évènement de "+cloud.url
-            onClicked: cloud.hide()
-        }
 
 
     }
@@ -150,6 +88,7 @@ FocusScope {
             anchors.top: parent.top
             anchors.right: lock.left
             height: userLabel.height*1.5
+
             Text {
                 id: userLabel
                 text: "Utilisateur"
@@ -167,7 +106,7 @@ FocusScope {
             anchors.top: parent.top
             ToolTip.delay: 1000
             ToolTip.visible: hovered
-            ToolTip.text: "Modifier les identifiants utilisateur"
+            ToolTip.text: "Modifier l'adresse web et mot de passe"
 
         }
 
@@ -196,57 +135,11 @@ FocusScope {
 
         }
 
-
-        TextField {
-            id: urlMarques
-            font.pixelSize: app.fontSize
-            anchors.left: parent.left
-            anchors.top: urlScores.bottom
-            anchors.right: parent.right
-            selectByMouse: true
-            ToolTip.delay: 1000
-            ToolTip.visible: hovered
-            ToolTip.text: "URL de publication des feuilles de marques (ex: http://score.trapta.eu/uploadpdf.php)"
-            placeholderText: "URL de publication des feuilles de marques"
-            text: cloud.urlMarques
-            Keys.onReturnPressed: urlMarques.focus = false
-            Keys.onEnterPressed: urlMarques.focus = false
-            onEditingFinished: cloud.setUrlMarques(urlMarques.displayText)
-            Keys.onEscapePressed: {
-                urlMarques.text = cloud.urlMarques
-                urlMarques.focus = false
-            }
-            enabled: lock.checked
-
-        }
-
-
-        TextField {
-            id: userId
-            font.pixelSize: app.fontSize
-            anchors.left: parent.left
-            anchors.top: urlMarques.bottom
-            anchors.right: parent.right
-            placeholderText: "Identifiant"
-            selectByMouse: true
-            text: cloud.userId
-            Keys.onReturnPressed: userId.focus = false
-            Keys.onEnterPressed: userId.focus = false
-            onEditingFinished: cloud.setUserId(userId.displayText)
-            Keys.onEscapePressed: {
-                userId.text = cloud.userId
-                userId.focus = false
-            }
-            enabled: lock.checked
-
-        }
-
-
         TextField {
             id: password
             font.pixelSize: app.fontSize
             anchors.left: parent.left
-            anchors.top: userId.bottom
+            anchors.top: urlScores.bottom
             anchors.right: parent.right
             selectByMouse: true
             echoMode: lock.checked?TextInput.Normal:TextInput.Password
@@ -264,10 +157,8 @@ FocusScope {
         }
 
         Component.onCompleted: {
-            lock.checked = (userId.text === "" || urlMarques.text === "" || urlScores.text === "" || password.text === "")
+            lock.checked = (urlScores.text === "" || password.text === "")
         }
-
-
     }
 
 
@@ -378,32 +269,17 @@ FocusScope {
             onCheckedChanged: connectButton.checked?viewcontroller.connectToServer():viewcontroller.disconnectFromServer()
         }
 
-
-        Button {
-            id: pdfButton
-            anchors.top: traptaImage.bottom
-            anchors.right: parent.right
-            text: "  Publier PDF  "
-            font.pixelSize: app.fontSize*0.8
-            ToolTip.delay: 1000
-            ToolTip.visible: hovered
-            ToolTip.text: "Publier sur la page web l'ensemble des feuilles de score au format PDF"
-            onClicked: Qt.openUrlExternally("http://"+urlMarques.text+"?username="+userId.text+"&password="+password.text)
-        }
-
         Connections {
             target: viewcontroller
-            onDisconnected: {
+            function onDisconnected() {
                 connectButton.checked = false
                 traptalinkImage.source = "qrc:/images/cross.png"
             }
-            onConnected: {
+            function onConnected() {
                 connectButton.checked = true
                 traptalinkImage.source = "qrc:/images/tick.png"
             }
         }
-
-
     }
 
     ScrollView {
@@ -426,26 +302,24 @@ FocusScope {
             font.pixelSize: app.fontSize*0.8
             Connections {
                 target: viewcontroller
-                onLog: logArea.append(Qt.formatDateTime(new Date(),"hh:mm:ss:zzz")+": "+logString)
+                function onLog(logString) {
+                    logArea.append(Qt.formatDateTime(new Date(),"hh:mm:ss:zzz")+": "+logString)
+                }
             }
-
         }
-
     }
 
-    Keys.onPressed: {
+    Keys.onPressed: function(event) {
         print("Key pressed"+event.key)
         if (event.modifiers & Qt.ControlModifier) switch (event.key) {
             case Qt.Key_Minus:
                 app.fontSize--;
                 break;
             case Qt.Key_Plus:
+            case Qt.Key_Equal:
                 app.fontSize++;
                 break;
         }
 
     }
-
-
-
 }
