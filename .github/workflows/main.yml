@@ -114,12 +114,7 @@ jobs:
       working-directory: ${{ github.workspace }}
       run:  |
             copy package.xml ${{ github.workspace }}\bin\release\
-            echo "ls ${{ github.workspace }}\bin\release"
-            ls ${{ github.workspace }}\bin\release
-            echo "ls ${{ github.workspace }}\bin\release\bearer"
-            ls ${{ github.workspace }}\bin\release\bearer
             ${{ runner.temp }}\Qt\Tools\QtInstallerFramework\4.5\bin\binarycreator.exe --offline-only -c config.xml -p ${{ github.workspace }}\bin\release ${{ github.workspace }}\bin\release\TRAPTACloud.exe
-            ls
 
     
 

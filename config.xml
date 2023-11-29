@@ -5,5 +5,5 @@
     <Title>TRAPTA Cloud</Title>
     <Publisher>TRAPTA Project</Publisher>
     <StartMenuDir>TRAPTA</StartMenuDir>
-    <TargetDir>@HomeDir@/trapte/traptacloud</TargetDir>
+    <TargetDir>@HomeDir@/trapta/traptacloud</TargetDir>
 </Installer>
