@@ -10,7 +10,7 @@
 #define SCRIPT_RANKING "/updateranking.php"
 #define SCRIPT_MATCHES "/updatematches.php"
 
-static QRegularExpression regexp1("'/{}();:,.=@#$/");
+const QRegularExpression specialCharRegex("[^a-zA-Z0-9\\s-]");
 
 Cloud::Cloud() : QObject(),
     _linkStatus(-1)
@@ -20,9 +20,9 @@ Cloud::Cloud() : QObject(),
     connect(_networkManager, &QNetworkAccessManager::finished, this, &Cloud::replyFinished);
 
     QSettings settings;
-    _urlScores = settings.value("urlScores", QVariant("URL de votre page php")).toString();
-    _eventName = settings.value("eventname", QVariant("")).toString();
-    _password = settings.value("password", QVariant("")).toString();
+    _urlScores = settings.value("urlScores", QVariant("http://www.monsite.fr/traptascore")).toString();
+    _eventName = settings.value("eventname", QVariant("2023-12-01 Joli tir")).toString();
+    _password = settings.value("password", QVariant("mot de passe")).toString();
 
 }
 
@@ -41,9 +41,10 @@ void Cloud::setUrlScores(const QString &urlScores) {
 void Cloud::setEventName(const QString& eventName) {
     QSettings settings;
     QString en = eventName;
-    en.remove(QRegularExpression(regexp1));
+    en.remove(QRegularExpression(specialCharRegex));
     settings.setValue("eventname", QVariant(en));
     _eventName = en;
+    emit eventNameChanged(_eventName);
 }
 
 void Cloud::replyFinished(QNetworkReply *reply) {

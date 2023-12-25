@@ -121,7 +121,7 @@ FocusScope {
             selectByMouse: true
             ToolTip.delay: 1000
             ToolTip.visible: hovered
-            ToolTip.text: "URL de publication des scores (ex: http://score.trapta.eu)"
+            ToolTip.text: "URL de publication des scores (ex: http://www.monsite.fr/traptascore)"
             placeholderText: "URL de publication des scores"
             text: cloud.urlScores
             Keys.onReturnPressed: urlScores.focus = false
@@ -140,6 +140,7 @@ FocusScope {
             font.pixelSize: app.fontSize
             anchors.left: parent.left
             anchors.top: urlScores.bottom
+            anchors.topMargin: 20
             anchors.right: parent.right
             selectByMouse: true
             echoMode: lock.checked?TextInput.Normal:TextInput.Password

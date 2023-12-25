@@ -9,7 +9,7 @@ Window {
     height: 480
     minimumWidth: 640
     minimumHeight: 480
-    title: "TRAPTACloud Simple"
+    title: "TRAPTACloud Simple 2"
 
     App {
         anchors.fill: parent
