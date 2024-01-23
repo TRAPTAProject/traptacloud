@@ -388,7 +388,7 @@ FocusScope {
             ToolTip.delay: 1000
             ToolTip.visible: hovered
             ToolTip.text: "Publier sur la page web l'ensemble des feuilles de score au format PDF"
-            onClicked: Qt.openUrlExternally("http://"+urlMarques.text+"?username="+userId.text+"&password="+password.text)
+            onClicked: Qt.openUrlExternally(urlMarques.text+"?username="+userId.text+"&password="+password.text)
         }
 
         Connections {
