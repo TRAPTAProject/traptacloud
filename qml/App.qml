@@ -1,13 +1,13 @@
-import QtQuick 2.10
-import QtQuick.Controls 2.3
-import QtQuick.Controls.Material 2.1
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Controls.Material
 
 
 FocusScope {
 
     id: app
-    width: 650
-    height: 550
+    width: 640
+    height: 480
     focus: true
 
     property int fontSize: 18
@@ -54,8 +54,9 @@ FocusScope {
             anchors.top: eventLabelBg.bottom
             anchors.topMargin: 20
             anchors.right: parent.right
-            placeholderText: "Nom de l'évènement"
+            placeholderText: "Date et nom de l'évènement"
             selectByMouse: true
+            maximumLength: 50
             text: cloud.eventName
             Keys.onReturnPressed: eventName.focus = false
             Keys.onEnterPressed: eventName.focus = false
@@ -64,50 +65,11 @@ FocusScope {
                 eventName.text = cloud.eventName
                 eventName.focus = false
             }
-
-        }
-
-        Button {
-            id: dateButton
-            anchors.top: eventName.bottom
-            anchors.left: parent.left
-            ToolTip.delay: 1000
-            ToolTip.visible: hovered
-            ToolTip.text: "Sélectionner la date de l'évènement"
-            text: "  Date...  "
-            onClicked: calendarDialog.open()
-        }
-
-        Label {
-            id: dateLabel
-            anchors.left: dateButton.right
-            anchors.leftMargin: 15
-            anchors.verticalCenter: dateButton.verticalCenter
-            font.pixelSize: app.fontSize
-            text: Qt.formatDate(cloud.eventDate, "d MMMM yyyy")
-        }
-
-        Label {
-            id: timeLabel
-            anchors.left: parent.left
-            anchors.baseline: timeBox.baseline
-            font.pixelSize: app.fontSize
-            text: "Début des tirs à  "
-        }
-
-        ComboBox {
-            id: timeBox
-            anchors.left: timeLabel.right
-            anchors.top: dateButton.bottom
-            currentIndex: cloud.timeChooserIndex
-            model: cloud.timeChooserList
-            onCurrentIndexChanged: cloud.setTimeChooserIndex(timeBox.currentIndex)
-
         }
 
         Button {
             id: publishButton
-            anchors.top: timeBox.bottom
+            anchors.top: eventName.bottom
             anchors.left: parent.left
             text: "  Publier  "
             font.pixelSize: app.fontSize
@@ -120,7 +82,7 @@ FocusScope {
 
         Button {
             id: hideButton
-            anchors.top: timeBox.bottom
+            anchors.top: eventName.bottom
             anchors.right: parent.right
             text: "  Cacher  "
             font.pixelSize: app.fontSize
@@ -129,8 +91,6 @@ FocusScope {
             ToolTip.text: "Retirer l'évènement de "+cloud.url
             onClicked: cloud.hide()
         }
-
-
     }
 
     Item {
@@ -193,6 +153,7 @@ FocusScope {
                 urlScores.focus = false
             }
             enabled: lock.checked
+            height: 40
 
         }
 
@@ -202,6 +163,7 @@ FocusScope {
             font.pixelSize: app.fontSize
             anchors.left: parent.left
             anchors.top: urlScores.bottom
+            anchors.topMargin: 10
             anchors.right: parent.right
             selectByMouse: true
             ToolTip.delay: 1000
@@ -217,7 +179,7 @@ FocusScope {
                 urlMarques.focus = false
             }
             enabled: lock.checked
-
+            height: 40
         }
 
 
@@ -226,6 +188,7 @@ FocusScope {
             font.pixelSize: app.fontSize
             anchors.left: parent.left
             anchors.top: urlMarques.bottom
+            anchors.topMargin: 10
             anchors.right: parent.right
             placeholderText: "Identifiant"
             selectByMouse: true
@@ -238,7 +201,7 @@ FocusScope {
                 userId.focus = false
             }
             enabled: lock.checked
-
+            height: 40
         }
 
 
@@ -247,6 +210,7 @@ FocusScope {
             font.pixelSize: app.fontSize
             anchors.left: parent.left
             anchors.top: userId.bottom
+            anchors.topMargin: 10
             anchors.right: parent.right
             selectByMouse: true
             echoMode: lock.checked?TextInput.Normal:TextInput.Password
@@ -260,7 +224,7 @@ FocusScope {
                 password.focus = false
             }
             enabled: lock.checked
-
+            height: 40
         }
 
         Component.onCompleted: {
@@ -393,11 +357,11 @@ FocusScope {
 
         Connections {
             target: viewcontroller
-            onDisconnected: {
+            function onDisconnected() {
                 connectButton.checked = false
                 traptalinkImage.source = "qrc:/images/cross.png"
             }
-            onConnected: {
+            function onConnected() {
                 connectButton.checked = true
                 traptalinkImage.source = "qrc:/images/tick.png"
             }
@@ -426,24 +390,26 @@ FocusScope {
             font.pixelSize: app.fontSize*0.8
             Connections {
                 target: viewcontroller
-                onLog: logArea.append(Qt.formatDateTime(new Date(),"hh:mm:ss:zzz")+": "+logString)
+                function onLog(logString) {
+                    logArea.append(Qt.formatDateTime(new Date(),"hh:mm:ss:zzz")+": "+logString)
+                }
             }
 
         }
 
     }
 
-    Keys.onPressed: {
+    Keys.onPressed: function(event) {
         print("Key pressed"+event.key)
         if (event.modifiers & Qt.ControlModifier) switch (event.key) {
             case Qt.Key_Minus:
                 app.fontSize--;
                 break;
             case Qt.Key_Plus:
+            case Qt.Key_Equal:
                 app.fontSize++;
                 break;
         }
-
     }
 
 

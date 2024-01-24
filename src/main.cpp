@@ -40,12 +40,10 @@ void messageHandler(QtMsgType type, const QMessageLogContext &context, const QSt
 
 int main(int argc, char *argv[]) {
 
-    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-
     QGuiApplication app(argc, argv);
 
     QGuiApplication::setOrganizationName("TRAPTA");
-    QGuiApplication::setOrganizationDomain("trapta.eu");
+    QGuiApplication::setOrganizationDomain("trapta.fr");
     QGuiApplication::setApplicationName("TRAPTACloud");
 
     qInstallMessageHandler(messageHandler);
@@ -56,14 +54,6 @@ int main(int argc, char *argv[]) {
     QThread traptaThread;
     TRAPTA trapta;
     trapta.moveToThread(&traptaThread);
-//    connect(this, SIGNAL(connectToServer(QString,int)), _adapter, SLOT(connectToServer(QString,int)));
-//    connect(this, SIGNAL(disconnectFromServer(bool)), _adapter, SLOT(disconnectFromServer(bool)));
-//    connect(_adapter, SIGNAL(connected()), SLOT(connectedToServer()));
-//    connect(_adapter, SIGNAL(disconnected(bool)), SLOT(disconnectedFromServer(bool)));
-//    connect(_adapter, SIGNAL(jsonDocUpdate(QJsonDocument)), SLOT(processJsonDoc(QJsonDocument)));
-//    connect(ui->resetEventButton, SIGNAL(clicked()), SLOT(onResetEventButton()));
-//    connect(ui->displayEventButton, SIGNAL(clicked()), SLOT(onDisplayEventButton()));
-//    connect(ui->updateButton, SIGNAL(clicked()), SLOT(onDisplayEventButton()));
     traptaThread.start();
 
     // start UDP listener

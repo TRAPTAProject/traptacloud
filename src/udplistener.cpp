@@ -13,7 +13,7 @@ void UDPListener::initSocket() {
         }
     }
 
-    connect(_udpSocket, SIGNAL(readyRead()),this, SLOT(readPendingDatagrams()));
+    connect(_udpSocket, &QIODevice::readyRead, this, &UDPListener::readPendingDatagrams);
     qDebug() << "UDP listener started";
 }
 
