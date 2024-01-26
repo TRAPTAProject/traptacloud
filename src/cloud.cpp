@@ -20,34 +20,13 @@ Cloud::Cloud() : QObject(),
     connect(_networkManager, &QNetworkAccessManager::finished, this, &Cloud::replyFinished);
 
     QSettings settings;
-    for (int h=6; h<=23; h++) {
-        for (int m=0; m<=45; m+=15) {
-            _timeChooserList << QString("%0h%1")
-                                .arg(QString::number(h).rightJustified(2, '0'))
-                                .arg(QString::number(m).rightJustified(2, '0'));
-        }
-    }
-    _timeChooserIndex = settings.value("timeChooserIndex", QVariant(12)).toInt();
-    _eventDate = settings.value("eventDate", QVariant(QDate::currentDate())).toDate();
-    _urlScores = settings.value("urlScores", QVariant("http://score.trapta.eu")).toString();
-    _urlMarques = settings.value("urlMarques", QVariant("http://score.trapta.eu/uploadpdf.php")).toString();
-    _eventName = settings.value("eventname", QVariant("")).toString();
+
+    _urlScores = settings.value("urlScores", QVariant("http://score.trapta.fr")).toString();
+    _urlMarques = settings.value("urlMarques", QVariant("http://score.trapta.fr/uploadpdf.php")).toString();
+    _eventName = settings.value("eventname", QVariant("2023-12-01 Joli tir")).toString();
     _userId = settings.value("username", QVariant("")).toString();
     _password = settings.value("password", QVariant("")).toString();
 
-}
-
-void Cloud::setTimeChooserIndex(int index) {
-    QSettings settings;
-    settings.setValue("timeChooserIndex", QVariant(index));
-    _timeChooserIndex = index;
-}
-
-void Cloud::setEventDate(const QDate& date) {
-    QSettings settings;
-    settings.setValue("eventDate", QVariant(date));
-    _eventDate = date;
-    emit eventDateChanged(date);
 }
 
 void Cloud::setUserId(const QString &userId) {
@@ -95,11 +74,6 @@ void Cloud::publish() {
     postData.append(("username="+_userId).toUtf8());
     postData.append(("&password="+_password).toUtf8());
     postData.append(("&eventname="+_eventName).toUtf8());
-    // 21600 seconds is 6 hours, and 900 seconds is 15 minutes
-    QTime time = QTime(0,0).addSecs(21600+_timeChooserIndex*900);
-    QString dateTimeParam = QString("&eventdate=%0 %1").arg(_eventDate.toString("yyyy-MM-dd")).arg(time.toString());
-    qDebug() << "Posting event info with date=" << dateTimeParam;
-    postData.append(dateTimeParam.toUtf8());
     _networkManager->post(request, postData);
     emit log("Demande au site web TRAPTA: Afficher évènement...");
 }

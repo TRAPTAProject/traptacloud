@@ -32,9 +32,9 @@ void TRAPTA::connectToServer() {
     qDebug() << str;
     emit log(str);
     _socket = new QTcpSocket(this);
-    connect(_socket, SIGNAL(error(QAbstractSocket::SocketError)), SLOT(errorHandler(QAbstractSocket::SocketError)));
-    connect(_socket, SIGNAL(readyRead()), SLOT(read()));
-    connect(_socket, SIGNAL(disconnected()), SLOT(disconnectFromServer()));
+    connect(_socket, &QAbstractSocket::errorOccurred, this, &TRAPTA::errorHandler);
+    connect(_socket, &QIODevice::readyRead, this, &TRAPTA::read);
+    connect(_socket, &QAbstractSocket::disconnected, this, &TRAPTA::disconnectFromServer);
     _socket->connectToHost(_host, _port);
     if (!_socket->waitForConnected(8000)) {
         qCritical() << "Cannot connect to TRAPTA !";

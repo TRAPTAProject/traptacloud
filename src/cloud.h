@@ -12,9 +12,6 @@ class Cloud : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(int linkStatus READ linkStatus NOTIFY linkStatusChanged) // -1 Fail, 0: warning, 1:OK
-    Q_PROPERTY(QStringList timeChooserList READ timeChooserList CONSTANT)
-    Q_PROPERTY(int timeChooserIndex READ timeChooserIndex NOTIFY timeChooserIndexChanged)
-    Q_PROPERTY(QDate eventDate READ eventDate NOTIFY eventDateChanged)
     Q_PROPERTY(QString urlScores READ urlScores NOTIFY urlScoresChanged)
     Q_PROPERTY(QString urlMarques READ urlMarques NOTIFY urlMarquesChanged)
     Q_PROPERTY(QString userId READ userId NOTIFY userIdChanged)
@@ -26,9 +23,6 @@ public:
     explicit Cloud();
 
     int linkStatus() const { return _linkStatus; }
-    QStringList timeChooserList() const { return _timeChooserList; }
-    int timeChooserIndex() const { return _timeChooserIndex; }
-    QDate eventDate() const { return _eventDate; }
     QString urlScores() const { return _urlScores; }
     QString urlMarques() const { return _urlMarques; }
     QString userId() const { return _userId; }
@@ -41,8 +35,6 @@ signals:
     void log(QString logString);
     void logError(int icon, QString title, QString content);
     void linkStatusChanged(int linkStatus);
-    void timeChooserIndexChanged(int timeChooserIndex);
-    void eventDateChanged(QDate eventDate);
     void urlScoresChanged(QString urlScores);
     void urlMarquesChanged(QString urlMarques);
     void userIdChanged(QString userId);
@@ -52,8 +44,6 @@ signals:
 
 public slots:
     void postJsonDoc(QJsonDocument jsonDoc);
-    void setTimeChooserIndex(int index);
-    void setEventDate(const QDate& date);
     void setUserId(const QString& userId);
     void setPassword(const QString& password);
     void setUrlScores(const QString& urlScores);
@@ -72,9 +62,6 @@ private:
 
     QNetworkAccessManager* _networkManager;
     int _linkStatus;
-    QStringList _timeChooserList;
-    int _timeChooserIndex;
-    QDate _eventDate;
     QString _urlScores;
     QString _urlMarques;
     QString _userId;

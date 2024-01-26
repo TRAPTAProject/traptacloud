@@ -1,7 +1,6 @@
-import QtQuick 2.10
-import QtQuick.Controls 2.3
-import QtQuick.Controls 1.4
-import QtQuick.Controls.Material 2.1
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Controls.Material
 
 Dialog {
     id: calendarDialog
@@ -17,13 +16,14 @@ Dialog {
 
     Calendar {
         id: myCalendar
-        anchors.horizontalCenter: parent.horizontalCenter
+/*        anchors.horizontalCenter: parent.horizontalCenter
         selectedDate: cloud.eventDate
         onClicked: {
             print(date)
             cloud.setEventDate(date)
             close()
         }
+        */
 
     }
 

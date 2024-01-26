@@ -1,31 +1,29 @@
-import QtQuick 2.10
-import QtQuick.Controls 2.3
-import QtQuick.Controls.Material 2.1
-import QtQuick.Dialogs 1.0
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Controls.Material
+import QtQuick.Dialogs
 
 
-ApplicationWindow {
+Window {
 
     visible: true
-    width: 650
-    height: 550
-    minimumWidth: 650
-    minimumHeight: 550
-    title: "TRAPTACloud 2.2"
+    width: 640
+    height: 600
+    minimumWidth: 640
+    minimumHeight: 480
+    title: "TRAPTACloud 2.5.0"
 
     App {
         anchors.fill: parent
-    }
-
-    CalendarDialog {
-        id: calendarDialog
     }
 
     PopupBox {
         id: popupBox
         Connections {
             target: viewcontroller
-            onLogError: popupBox.pop(icon, title, content)
+            function onLogError(icon, title, content) {
+                popupBox.pop(icon, title, content)
+            }
         }
     }
 
