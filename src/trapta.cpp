@@ -98,6 +98,7 @@ void TRAPTA::read() {
 void TRAPTA::errorHandler(QAbstractSocket::SocketError error) {
     qDebug() << "Handling socket error";
     qDebug() << _socket->errorString();
+    qDebug() << error;
     _socket->close();
     _connected = false;
     emit log(QString("Déconnecté du serveur TRAPTA. Erreur: %0").arg(_socket->errorString()));
