@@ -2,7 +2,7 @@
 <Package>
     <DisplayName>TRAPTA Cloud</DisplayName>
     <Description>TRAPTA Cloud</Description>
-    <Version>1.0</Version>
-    <ReleaseDate>2017-04-27</ReleaseDate>
+    <Version>2.5.0</Version>
+    <ReleaseDate>2024-01-29</ReleaseDate>
     <Default>true</Default>
 </Package>
