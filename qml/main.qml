@@ -11,7 +11,7 @@ Window {
     height: 600
     minimumWidth: 640
     minimumHeight: 480
-    title: "TRAPTACloud 2.5.0"
+    title: "TRAPTACloud version 2.5.0"
 
     App {
         anchors.fill: parent

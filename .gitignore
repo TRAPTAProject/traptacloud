@@ -6,3 +6,5 @@ bin
 build
 release
 qrc_resources.cpp
+
+TRAPTACloud.pro.user

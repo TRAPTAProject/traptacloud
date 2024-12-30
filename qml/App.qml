@@ -54,7 +54,7 @@ FocusScope {
             anchors.top: eventLabelBg.bottom
             anchors.topMargin: 20
             anchors.right: parent.right
-            placeholderText: "Date et nom de l'évènement"
+            placeholderText: "Nom de l'évènement"
             selectByMouse: true
             maximumLength: 50
             text: cloud.eventName
@@ -66,10 +66,13 @@ FocusScope {
                 eventName.focus = false
             }
         }
+        Calendar {
+            id: eventDate
+        }
 
         Button {
             id: publishButton
-            anchors.top: eventName.bottom
+            anchors.top: eventDate.bottom
             anchors.left: parent.left
             text: "  Publier  "
             font.pixelSize: app.fontSize
@@ -82,7 +85,7 @@ FocusScope {
 
         Button {
             id: hideButton
-            anchors.top: eventName.bottom
+            anchors.top: eventDate.bottom
             anchors.right: parent.right
             text: "  Cacher  "
             font.pixelSize: app.fontSize
